@@ -4,10 +4,14 @@ const $formThree = $('.step.three');
 
 const $inputNome = $('#nome');
 const $inputSobrenome = $('#sobrenome');
+const $inputemail = $('#email');
 const $inputDataNascimento = $('#dataNascimento');
 
 const $stepText = $('#step-text');
 const $stepDescription = $('#step-description');
+
+const emailRegex =
+  /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 const minLength = 2;
 const minLengthData = 8;
@@ -32,6 +36,18 @@ function validarInput(element, minLength, maxLength) {
   return true;
 }
 
+function validarEmail(element) {
+  const closest = $(element).closest('.input-data');
+
+  if (!element.value || element.value.toLowerCase().match(emailRegex)) {
+    closest.addClass('error');
+    return false;
+  }
+
+  closest.removeClass('error');
+  return true;
+}
+
 function init() {
   $formTwo.hide();
   $formThree.hide();
@@ -49,7 +65,15 @@ function init() {
     sobrenomeValido = validarInput(this, minLength);
   });
 
+  $inputemail.keyup(function () {
+    emailValido = validarEmail(this, minLength);
+  });
+
   $inputDataNascimento.keyup(function () {
+    dataNascimentoValido = validarInput(this, minLengthData);
+  });
+
+  $inputDataNascimento.change(function () {
     dataNascimentoValido = validarInput(this, minLengthData);
   });
 }
