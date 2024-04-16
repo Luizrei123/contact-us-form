@@ -6,6 +6,9 @@ const $inputNome = $('#nome');
 const $inputSobrenome = $('#sobrenome');
 const $inputemail = $('#email');
 const $inputDataNascimento = $('#dataNascimento');
+const $inputMiniBio = $('#minibio');
+const $containerBtnFormOne = $('#containerBtnFormOne');
+const $btnFormOne = $('#btnFormOne');
 
 const $stepText = $('#step-text');
 const $stepDescription = $('#step-description');
@@ -48,6 +51,18 @@ function validarEmail(element) {
   return true;
 }
 
+function validarFormOne() {
+  if (nomeValido && sobrenomeValido && emailValido && dataNascimentoValido) {
+    $containerBtnFormOne.removeClass('disabled');
+    $btnFormOne.removeClass('disabled');
+    $btnFormOne.off('click').on('click', iniciarPasso2);
+  } else {
+    $containerBtnFormOne.addClass('disabled');
+    $btnFormOne.addClass('disabled');
+    $btnFormOne.off('click');
+  }
+}
+
 function init() {
   $formTwo.hide();
   $formThree.hide();
@@ -59,22 +74,31 @@ function init() {
 
   $inputNome.keyup(function () {
     nomeValido = validarInput(this, minLength);
+    validarFormOne();
   });
 
   $inputSobrenome.keyup(function () {
     sobrenomeValido = validarInput(this, minLength);
+    validarFormOne();
   });
 
   $inputemail.keyup(function () {
     emailValido = validarEmail(this, minLength);
+    validarFormOne();
   });
 
   $inputDataNascimento.keyup(function () {
     dataNascimentoValido = validarInput(this, minLengthData);
+    validarFormOne();
   });
 
   $inputDataNascimento.change(function () {
     dataNascimentoValido = validarInput(this, minLengthData);
+    validarFormOne();
+  });
+
+  $inputMiniBio.keyup(function () {
+    validarFormOne();
   });
 }
 
