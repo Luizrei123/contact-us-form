@@ -17,8 +17,8 @@ const $inputCep = $('#cep');
 const $containerBtnFormTwo = $('#containerBtnFormTwo');
 const $btnFormTwo = $('#btnFormTwo');
 
-const $habilidades = $('#habilidades');
-const $pontosForte = $('#pontosForte');
+const $inputHabilidades = $('#habilidades');
+const $inputPontosForte = $('#pontosForte');
 const $containerBtnFormThree = $('#containerBtnFormThree');
 const $btnFormThree = $('#btnFormThree');
 
@@ -102,7 +102,7 @@ function validarFormThree() {
   if (habilidadesValido && pontosForteValido) {
     $containerBtnFormThree.removeClass('disabled');
     $btnFormThree.removeClass('disabled');
-    $btnFormThree.off('click').on('click', finishForm);
+    $btnFormThree.off('click').on('click', salvarNoTrello);
   } else {
     $containerBtnFormThree.addClass('disabled');
     $btnFormThree.addClass('disabled');
@@ -202,12 +202,12 @@ function initFormThree() {
   $formTwo.hide();
   $formThree.show();
 
-  $habilidades.keyup(function () {
+  $inputHabilidades.keyup(function () {
     habilidadesValido = validarInput(this, minLengthTextArea);
     validarFormThree();
   });
 
-  $pontosForte.keyup(function () {
+  $inputPontosForte.keyup(function () {
     pontosForteValido = validarInput(this, minLengthTextArea);
     validarFormThree();
   });
@@ -221,6 +221,72 @@ function finishForm() {
   $stepText.text(
     'Entraremos em contato assim que possível, nosso prazo médio de resposta é de 5 dias. Fique atento na sua caixa de email.'
   );
+}
+
+async function salvarNoTrello() {
+  try {
+    const nome = $inputNome.val();
+    const sobrenome = $inputSobrenome.val();
+    const email = $inputemail.val();
+    const dataNascimento = $inputDataNascimento.val();
+    const minibio = $inputMiniBio.val();
+    const endereco = $inputEndereco.val();
+    const complemento = $inputComplemento.val();
+    const cidade = $inputCidade.val();
+    const cep = $inputCep.val();
+    const habilidades = $inputHabilidades.val();
+    const pontosForte = $inputPontosForte.val();
+
+    const body = {
+      name: `Formulário de candidatura de ${nome} ${sobrenome}`,
+      desc: `Seguem os dados do candidato:
+      ------------------- Dados pessoais ------------
+      Nome: ${nome}
+      Sobrenome: ${sobrenome}
+      Email: ${email}
+      Data de nascimento: ${dataNascimento}
+      Minibio: ${minibio}
+      ------------------- Dados de correspondência ------------
+      Endereço: ${endereco}
+      Complemento: ${complemento}
+      Cidade: ${cidade}
+      CEP: ${cep}
+      ------------------- Dados de recrutamento ------------
+      Habilidades: ${habilidades}
+      Pontos Fortes: ${pontosForte}
+      `
+    };
+
+    if (
+      !nome ||
+      !sobrenome ||
+      !email ||
+      !dataNascimento ||
+      !endereco ||
+      !complemento ||
+      !cidade ||
+      !cep ||
+      !habilidades ||
+      !pontosForte
+    ) {
+      return alert('Preencha todos os campos corretamente antes de continuar.');
+    }
+
+    await fetch(
+      'https://api.trello.com/1/cards?idList=66227870b96eb50e98241e49&key=a01d5f91d4d2670e86e2a4e127707762&token=ATTA10e4400813d81e83185c62437b4c20e496b1c7f122373331daaf9e609e74f3dcE966847D',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      }
+    );
+
+    return finishForm();
+  } catch (error) {
+    console.log(`Erro ao salvar no trello: `, error);
+  }
 }
 
 init();
