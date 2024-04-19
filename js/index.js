@@ -10,19 +10,33 @@ const $inputMiniBio = $('#minibio');
 const $containerBtnFormOne = $('#containerBtnFormOne');
 const $btnFormOne = $('#btnFormOne');
 
+const $inputEndereco = $('#endereco');
+const $inputComplemento = $('#complemento');
+const $inputCidade = $('#cidade');
+const $inputCep = $('#cep');
+const $containerBtnFormTwo = $('#containerBtnFormTwo');
+const $btnFormTwo = $('#btnFormTwo');
+
 const $stepText = $('#step-text');
 const $stepDescription = $('#step-description');
 
 const emailRegex =
   /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+const cepRegex = /(\d{5})(\d)/;
+const nonNumericReplace = /[^\d]/g;
 
 const minLength = 2;
+const minLengthTextArea = 10;
 const minLengthData = 8;
 
 let nomeValido = false;
 let sobrenomeValido = false;
 let emailValido = false;
 let dataNascimentoValido = false;
+
+let enderecoValido = false;
+let cidadeValido = false;
+let cepValido = false;
 
 function validarInput(element, minLength, maxLength) {
   const closest = $(element).closest('.input-data');
@@ -42,7 +56,7 @@ function validarInput(element, minLength, maxLength) {
 function validarEmail(element) {
   const closest = $(element).closest('.input-data');
 
-  if (!element.value || element.value.toLowerCase().match(emailRegex)) {
+  if (!element.value || !element.value.toLowerCase().match(emailRegex)) {
     closest.addClass('error');
     return false;
   }
@@ -55,11 +69,23 @@ function validarFormOne() {
   if (nomeValido && sobrenomeValido && emailValido && dataNascimentoValido) {
     $containerBtnFormOne.removeClass('disabled');
     $btnFormOne.removeClass('disabled');
-    $btnFormOne.off('click').on('click', iniciarPasso2);
+    $btnFormOne.off('click').on('click', initFormTwo);
   } else {
     $containerBtnFormOne.addClass('disabled');
     $btnFormOne.addClass('disabled');
     $btnFormOne.off('click');
+  }
+}
+
+function validarFormTwo() {
+  if (enderecoValido && cidadeValido && cepValido) {
+    $containerBtnFormTwo.removeClass('disabled');
+    $btnFormTwo.removeClass('disabled');
+    $btnFormTwo.off('click').on('click', initFormThree);
+  } else {
+    $containerBtnFormTwo.addClass('disabled');
+    $btnFormTwo.addClass('disabled');
+    $btnFormTwo.off('click');
   }
 }
 
@@ -100,16 +126,50 @@ function init() {
   $inputMiniBio.keyup(function () {
     validarFormOne();
   });
+  $inputDataNascimento.on('focus', function () {
+    this.type = 'date';
+  });
+
+  $inputDataNascimento.on('blur', function () {
+    if (!this.value) {
+      this.type = 'text';
+    }
+  });
 }
 
-$inputDataNascimento.on('focus', function () {
-  this.type = 'date';
-});
+function initFormTwo() {
+  $stepText.text('Passo 2 de 3 - Dados de correspondência');
+  $stepDescription.text(
+    'Precisamos desses dados para que possamos entrar em contato.'
+  );
 
-$inputDataNascimento.on('blur', function () {
-  if (!this.value) {
-    this.type = 'text';
-  }
-});
+  $formOne.hide();
+  $formTwo.show();
+
+  $inputEndereco.keyup(function () {
+    enderecoValido = validarInput(this, minLengthTextArea);
+    validarFormTwo();
+  });
+
+  $inputCidade.keyup(function () {
+    cidadeValido = validarInput(this, minLength);
+    validarFormTwo();
+  });
+
+  $inputCep.keyup(function () {
+    this.value = this.value.replace(nonNumericReplace, '');
+
+    cepValido = validarInput(this, cepRegex);
+
+    if (cepValido) {
+      this.value = this.value.replace(cepRegex, '$1-$2');
+    }
+    validarFormTwo();
+  });
+
+  $inputComplemento.keyup(function () {
+    validarFormTwo();
+  });
+}
 
 init();
