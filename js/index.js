@@ -239,7 +239,8 @@ async function salvarNoTrello() {
 
     const body = {
       name: `Formulário de candidatura de ${nome} ${sobrenome}`,
-      desc: `Seguem os dados do candidato:
+      desc: `
+      Seguem os dados do candidato:
       ------------------- Dados pessoais ------------
       Nome: ${nome}
       Sobrenome: ${sobrenome}
