@@ -17,6 +17,12 @@ const $inputCep = $('#cep');
 const $containerBtnFormTwo = $('#containerBtnFormTwo');
 const $btnFormTwo = $('#btnFormTwo');
 
+const $habilidades = $('#habilidades');
+const $pontosForte = $('#pontosForte');
+const $containerBtnFormThree = $('#containerBtnFormThree');
+const $btnFormThree = $('#btnFormThree');
+
+const $title = $('#title');
 const $stepText = $('#step-text');
 const $stepDescription = $('#step-description');
 
@@ -37,6 +43,9 @@ let dataNascimentoValido = false;
 let enderecoValido = false;
 let cidadeValido = false;
 let cepValido = false;
+
+let habilidadesValido = false;
+let pontosForteValido = false;
 
 function validarInput(element, minLength, maxLength) {
   const closest = $(element).closest('.input-data');
@@ -86,6 +95,18 @@ function validarFormTwo() {
     $containerBtnFormTwo.addClass('disabled');
     $btnFormTwo.addClass('disabled');
     $btnFormTwo.off('click');
+  }
+}
+
+function validarFormThree() {
+  if (habilidadesValido && pontosForteValido) {
+    $containerBtnFormThree.removeClass('disabled');
+    $btnFormThree.removeClass('disabled');
+    $btnFormThree.off('click').on('click', finishForm);
+  } else {
+    $containerBtnFormThree.addClass('disabled');
+    $btnFormThree.addClass('disabled');
+    $btnFormThree.off('click');
   }
 }
 
@@ -170,6 +191,36 @@ function initFormTwo() {
   $inputComplemento.keyup(function () {
     validarFormTwo();
   });
+}
+
+function initFormThree() {
+  $stepText.text('Passo 3 de 3 - Conte-nos sobre você');
+  $stepDescription.text(
+    'Não economize palavras, aqui é onde você pode se destacar.'
+  );
+
+  $formTwo.hide();
+  $formThree.show();
+
+  $habilidades.keyup(function () {
+    habilidadesValido = validarInput(this, minLengthTextArea);
+    validarFormThree();
+  });
+
+  $pontosForte.keyup(function () {
+    pontosForteValido = validarInput(this, minLengthTextArea);
+    validarFormThree();
+  });
+}
+
+function finishForm() {
+  $formThree.hide();
+  $stepDescription.hide();
+
+  $title.text('Muito obrigado pela sua inscrição!');
+  $stepText.text(
+    'Entraremos em contato assim que possível, nosso prazo médio de resposta é de 5 dias. Fique atento na sua caixa de email.'
+  );
 }
 
 init();
